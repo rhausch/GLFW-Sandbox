@@ -4,6 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Shader.h"
 #include "SOIL2/SOIL2.h"
 
@@ -103,7 +107,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned char *image = SOIL_load_image("Images/image4.jpg", &width, &height, 0, SOIL_LOAD_RGBA);
+	unsigned char *image = SOIL_load_image("Images/image2.png", &width, &height, 0, SOIL_LOAD_RGBA);
 	std::cout << "SOIL load status: " << SOIL_last_result() << std::endl;
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -118,6 +122,13 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		ourShader.Use(); // Load shader
+
+		glm::mat4 transform;
+		transform = glm::translate(transform, glm::vec3(0.0f, -0.5f, 0.0f));
+		transform = glm::rotate(transform, (GLfloat)glfwGetTime() * -10.0f, glm::vec3(0.0, 0.0f, 1.0f));
+
+		GLint transformLocation = glGetUniformLocation(ourShader.Program, "transform");
+		glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
