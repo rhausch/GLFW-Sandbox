@@ -44,6 +44,12 @@
     <None Include="core.vert">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="lighting.vert" />
+    <None Include="lighting.frag" />
+    <None Include="lamp.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lamp.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

@@ -156,6 +156,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </None>
     <None Include="core.vert" />
+    <None Include="lamp.frag" />
+    <None Include="lamp.vert" />
+    <None Include="lighting.frag" />
+    <None Include="lighting.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
