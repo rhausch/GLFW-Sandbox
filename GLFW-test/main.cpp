@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <conio.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -257,8 +258,9 @@ int main()
 
 	glfwTerminate();
 
-	char temp;
-	std::cin >> temp;
+	std::cout << "GLFW Shutdown. Press any key to close" << std::endl;
+
+	while (!kbhit()); //Wait for key press
 
 	return EXIT_SUCCESS;
 }

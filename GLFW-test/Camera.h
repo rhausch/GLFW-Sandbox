@@ -78,7 +78,7 @@ public:
 		yOffset *= this->mouseSensitivity;
 
 		this->yaw += xOffset;
-		this->pitch += yOffset;
+		this->pitch -= yOffset;
 
 		if (constrainPitch)
 		{
