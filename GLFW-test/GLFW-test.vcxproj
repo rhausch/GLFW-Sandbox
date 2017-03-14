@@ -187,6 +187,7 @@
     <ClInclude Include="SOIL2\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Images\Checkerboard.jpg" />
     <Image Include="Images\container2.png" />
     <Image Include="Images\container2_specular.png" />
     <Image Include="Images\image1.jpg" />

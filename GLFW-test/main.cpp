@@ -22,7 +22,7 @@ void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 3.0f, 3.0f));
 GLfloat lastX = WIDTH / 2.0f;
 GLfloat lastY = HEIGHT / 2.0f;
 bool keys[1024];
@@ -82,7 +82,7 @@ int main()
 	Shader lampShader("lamp.vert", "lamp.frag");
 
 	// use with Perspective Projection
-	GLfloat vertices[] = {
+	GLfloat cubeVertices[] = {
 		// Positions            // Normals              // Texture Coords
 		-0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f,  0.0f,
 		0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,     1.0f,  0.0f,
@@ -127,27 +127,68 @@ int main()
 		-0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f,  1.0f
 	};
 
+	GLfloat floorVertices[] = {
+		// Positions            // Normals              // Texture Coords
+		-0.5f,  0.0f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f,  10.0f,
+		0.5f,  0.0f, -0.5f,     0.0f,  1.0f,  0.0f,     10.0f,  10.0f,
+		0.5f,  0.0f,  0.5f,     0.0f,  1.0f,  0.0f,     10.0f,  0.0f,
+		0.5f,  0.0f,  0.5f,     0.0f,  1.0f,  0.0f,     10.0f,  0.0f,
+		-0.5f,  0.0f,  0.5f,    0.0f,  1.0f,  0.0f,     0.0f,  0.0f,
+		-0.5f,  0.0f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f,  10.0f
+
+	};
+
+
 	glm::vec3 cubePosition[] =
 	{
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(2.0f, 5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.5f, 2.2f, 4.5f),
+		glm::vec3(-3.8f, 2.0f, -12.3f),
+		glm::vec3(2.4f, 0.4f, -3.5f),
 		glm::vec3(-1.7f, 3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.3f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, 2.5f),
 		glm::vec3(1.5f, 0.2f, -1.5f),
 		glm::vec3(-1.3f, 1.0f, -1.5f)
 	};
 
-	GLuint VBO, boxVAO;
+	GLuint boxVBO, floorVBO, boxVAO, floorVAO;
 	glGenVertexArrays(1, &boxVAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &floorVAO);
+	glGenBuffers(1, &boxVBO);
+	glGenBuffers(1, &floorVBO);
 
 	glBindVertexArray(boxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, boxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+	// Position Attrib
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
+	glEnableVertexAttribArray(0);
+	// Normal Attrib
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	// Texture Attrib
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	GLuint lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, boxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+	// Position Attrib
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+
+	glBindVertexArray(floorVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
 
 	// Position Attrib
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
@@ -161,24 +202,12 @@ int main()
 
 	glBindVertexArray(0);
 	
-	GLuint lightVAO;
-	glGenVertexArrays(1, &lightVAO);
-	glGenBuffers(1, &VBO);
 
-	glBindVertexArray(lightVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Position Attrib
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
-
-	GLuint diffuseMap, specularMap, emissionMap;
+	GLuint diffuseMap, specularMap, floorMap;
 	glGenTextures(1, &diffuseMap);
 	glGenTextures(1, &specularMap);
-	glGenTextures(1, &emissionMap);
+	glGenTextures(1, &floorMap);
 
 	int textureWidth, textureHeight;
 	unsigned char *image;
@@ -195,7 +224,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-	// diffuse map
+	// specular map
 	image = SOIL_load_image("Images/container2_specular.png", &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
 	glBindTexture(GL_TEXTURE_2D, specularMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -206,6 +235,18 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
+	// specular map
+	image = SOIL_load_image("Images/Checkerboard.jpg", &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
+	glBindTexture(GL_TEXTURE_2D, floorMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	SOIL_free_image_data(image);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+	//Unbind Texture
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	lightingShader.Use();
@@ -290,6 +331,19 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
+		model = glm::mat4();
+		model = glm::scale(model, glm::vec3(100.0f, 1.0f, 100.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, floorMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, floorMap);
+
+		glBindVertexArray(floorVAO);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
 		lampShader.Use();
 
 		modelLoc = glGetUniformLocation(lampShader.Program, "model");
@@ -315,7 +369,8 @@ int main()
 
 	glDeleteVertexArrays(1, &boxVAO);
 	glDeleteVertexArrays(1, &lightVAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &boxVBO);
+	glDeleteBuffers(1, &floorVBO);
 
 	glfwTerminate();
 

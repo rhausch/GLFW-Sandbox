@@ -70,6 +70,12 @@ public:
 		{
 			this->position -= this->right * velocity;
 		}
+
+		if (this->position.y < 0.1)
+		{
+			this->position.y = 0.1;
+		}
+
 	}
 
 	void ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true)
