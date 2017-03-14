@@ -79,7 +79,7 @@ int main()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Shader lightingShader("lighting.vert", "lighting.frag");
-	//Shader lampShader("lamp.vert", "lamp.frag");
+	Shader lampShader("lamp.vert", "lamp.frag");
 
 	// use with Perspective Projection
 	GLfloat vertices[] = {
@@ -161,23 +161,24 @@ int main()
 
 	glBindVertexArray(0);
 	
-	//GLuint lightVAO;
-	//glGenVertexArrays(1, &lightVAO);
-	//glGenBuffers(1, &VBO);
+	GLuint lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &VBO);
 
-	//glBindVertexArray(lightVAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	//// Position Attrib
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-	//glEnableVertexAttribArray(0);
+	// Position Attrib
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
+	glEnableVertexAttribArray(0);
 
-	//glBindVertexArray(0);
+	glBindVertexArray(0);
 
-	GLuint diffuseMap, specularMap;
+	GLuint diffuseMap, specularMap, emissionMap;
 	glGenTextures(1, &diffuseMap);
 	glGenTextures(1, &specularMap);
+	glGenTextures(1, &emissionMap);
 
 	int textureWidth, textureHeight;
 	unsigned char *image;
@@ -217,8 +218,8 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		//lightPos.x = sin(glfwGetTime()) * 3.0f;
-		//lightPos.z = cos(glfwGetTime()) * 3.0f;
+		lightPos.x = sin(glfwGetTime()) * 3.0f;
+		lightPos.z = cos(glfwGetTime()) * 3.0f;
 
 		GLfloat currentFrame = (GLfloat)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -231,11 +232,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		lightingShader.Use();
-		//GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
-		GLint lightDirectionLoc = glGetUniformLocation(lightingShader.Program, "light.direction");
+		GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+		//GLint lightDirectionLoc = glGetUniformLocation(lightingShader.Program, "light.direction");
 		GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
-		//glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-		glUniform3f(lightDirectionLoc, -0.0f, -0.0f, -1.0f);
+		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+		//glUniform3f(lightDirectionLoc, -0.0f, -0.0f, -1.0f);
 		glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 
 		//glm::vec3 lightColor;
@@ -251,6 +252,10 @@ int main()
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.2f, 0.2f, 0.2f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.5f, 0.5f, 0.5f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 1.0f, 1.0f, 1.0f);
+
+		glUniform1f(glGetUniformLocation(lightingShader.Program, "light.constant"), 1.0f);
+		glUniform1f(glGetUniformLocation(lightingShader.Program, "light.linear"), 0.09f);
+		glUniform1f(glGetUniformLocation(lightingShader.Program, "light.quadratic"), 0.032f);
 
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 32.0f);
 
@@ -285,7 +290,6 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		/*
 		lampShader.Use();
 
 		modelLoc = glGetUniformLocation(lampShader.Program, "model");
@@ -302,7 +306,6 @@ int main()
 
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		*/
 		
 		glBindVertexArray(0);
 
@@ -311,7 +314,7 @@ int main()
 	}
 
 	glDeleteVertexArrays(1, &boxVAO);
-	//glDeleteVertexArrays(1, &lightVAO);
+	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
 
 	glfwTerminate();
