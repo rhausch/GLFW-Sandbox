@@ -79,7 +79,7 @@ int main()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Shader lightingShader("lighting.vert", "lighting.frag");
-	Shader lampShader("lamp.vert", "lamp.frag");
+	//Shader lampShader("lamp.vert", "lamp.frag");
 
 	// use with Perspective Projection
 	GLfloat vertices[] = {
@@ -127,19 +127,19 @@ int main()
 		-0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f,  1.0f
 	};
 
-	//glm::vec3 cubePosition[] =
-	//{
-	//	glm::vec3(0.0f, 0.0f, 0.0f),
-	//	glm::vec3(2.0f, 5.0f, -15.0f),
-	//	glm::vec3(-1.5f, -2.2f, -2.5f),
-	//	glm::vec3(-3.8f, -2.0f, -12.3f),
-	//	glm::vec3(2.4f, -0.4f, -3.5f),
-	//	glm::vec3(-1.7f, 3.0f, -7.5f),
-	//	glm::vec3(1.3f, -2.0f, -2.5f),
-	//	glm::vec3(1.5f, 2.0f, -2.5f),
-	//	glm::vec3(1.5f, 0.2f, -1.5f),
-	//	glm::vec3(-1.3f, 1.0f, -1.5f)
-	//};
+	glm::vec3 cubePosition[] =
+	{
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
+	};
 
 	GLuint VBO, boxVAO;
 	glGenVertexArrays(1, &boxVAO);
@@ -161,19 +161,19 @@ int main()
 
 	glBindVertexArray(0);
 	
-	GLuint lightVAO;
-	glGenVertexArrays(1, &lightVAO);
-	glGenBuffers(1, &VBO);
+	//GLuint lightVAO;
+	//glGenVertexArrays(1, &lightVAO);
+	//glGenBuffers(1, &VBO);
 
-	glBindVertexArray(lightVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	//glBindVertexArray(lightVAO);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Position Attrib
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
-	glEnableVertexAttribArray(0);
+	//// Position Attrib
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
+	//glEnableVertexAttribArray(0);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 	GLuint diffuseMap, specularMap;
 	glGenTextures(1, &diffuseMap);
@@ -217,8 +217,8 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		lightPos.x = sin(glfwGetTime()) * 3.0f;
-		lightPos.z = cos(glfwGetTime()) * 3.0f;
+		//lightPos.x = sin(glfwGetTime()) * 3.0f;
+		//lightPos.z = cos(glfwGetTime()) * 3.0f;
 
 		GLfloat currentFrame = (GLfloat)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -231,9 +231,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		lightingShader.Use();
-		GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+		//GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
+		GLint lightDirectionLoc = glGetUniformLocation(lightingShader.Program, "light.direction");
 		GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
-		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+		//glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(lightDirectionLoc, -0.0f, -0.0f, -1.0f);
 		glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
 
 		//glm::vec3 lightColor;
@@ -269,11 +271,21 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
-		glBindVertexArray(boxVAO);
 		glm::mat4 model;
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(boxVAO);
+		
+		for (GLuint i = 0; i < 10; ++i)
+		{
+			model = glm::translate(glm::mat4(), cubePosition[i]);
 
+			GLfloat angle = 20.0f * i;
+			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		/*
 		lampShader.Use();
 
 		modelLoc = glGetUniformLocation(lampShader.Program, "model");
@@ -290,6 +302,7 @@ int main()
 
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+		*/
 		
 		glBindVertexArray(0);
 
@@ -298,7 +311,7 @@ int main()
 	}
 
 	glDeleteVertexArrays(1, &boxVAO);
-	glDeleteVertexArrays(1, &lightVAO);
+	//glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
 
 	glfwTerminate();
