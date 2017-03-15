@@ -274,11 +274,21 @@ int main()
 
 		lightingShader.Use();
 		GLint lightPosLoc = glGetUniformLocation(lightingShader.Program, "light.position");
-		//GLint lightDirectionLoc = glGetUniformLocation(lightingShader.Program, "light.direction");
+		GLint lightDirectionLoc = glGetUniformLocation(lightingShader.Program, "light.direction");
 		GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
+		GLint lightSpotCutOffLoc = glGetUniformLocation(lightingShader.Program, "light.cutOff");
+		GLint lightSpotOuterCutOffLoc = glGetUniformLocation(lightingShader.Program, "light.outerCutOff");
 		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-		//glUniform3f(lightDirectionLoc, -0.0f, -0.0f, -1.0f);
+		//glUniform3f(lightDirectionLoc, -0.0f, 1.0f, -0.0f);
 		glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+		//glUniform3f(lightPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z); //position spotlight at camera
+		glUniform3f(lightDirectionLoc, camera.GetFront().x, camera.GetFront().y, camera.GetFront().z); //Point it infront of us
+		glUniform1f(lightSpotCutOffLoc, glm::cos(glm::radians(20.0f)));
+		glUniform1f(lightSpotOuterCutOffLoc, glm::cos(glm::radians(21.0f)));
+
+
+
+
 
 		//glm::vec3 lightColor;
 		//lightColor.r = sin(glfwGetTime() * 2.0f);
@@ -290,8 +300,8 @@ int main()
 		//glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), diffuseColor.r, diffuseColor.b, diffuseColor.g);
 		//glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 1.0f, 1.0f, 1.0f);
 
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.2f, 0.2f, 0.2f);
-		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"), 0.1f, 0.1f, 0.1f);
+		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"), 0.8f, 0.8f, 0.8f);
 		glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"), 1.0f, 1.0f, 1.0f);
 
 		glUniform1f(glGetUniformLocation(lightingShader.Program, "light.constant"), 1.0f);
