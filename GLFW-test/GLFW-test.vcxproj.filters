@@ -50,6 +50,12 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="lamp.frag" />
+    <None Include="modelLoading.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="modelLoading.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -107,6 +113,12 @@
       <Filter>Header Files\SOIL2</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
